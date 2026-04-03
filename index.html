@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaproszenie ślubne</title>
+    <meta name="description" content="">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Lock Screen -->
+    <div id="lock-screen" class="lock-screen">
+        <div class="lock-screen-content">
+            <div class="lock-screen-icon icon-circle">
+                <img src="images/icons/lock.svg" alt="Lock" class="icon-img" width="40" height="40">
+            </div>
+            <div class="lang-switcher" id="lang-switcher-lock">
+                <button class="lang-btn active" data-lang="pl">PL</button>
+                <button class="lang-btn" data-lang="ua">UA</button>
+            </div>
+            <h1 class="lock-screen-title" data-i18n="lockScreen.title">Strona ślubna</h1>
+            <p class="lock-screen-subtitle" data-i18n="lockScreen.subtitle">Podaj hasło, aby zobaczyć szczegóły</p>
+            <form id="password-form" class="lock-screen-form">
+                <input type="password" id="password-input" class="lock-screen-input" data-i18n-placeholder="lockScreen.placeholder" placeholder="Hasło" autocomplete="off" autofocus>
+                <button type="submit" class="lock-screen-button" data-i18n="lockScreen.button">Wejdź</button>
+            </form>
+            <p id="lock-screen-error" class="lock-screen-error"></p>
+        </div>
+    </div>
+
+    <!-- App Content (hidden until decryption) -->
+    <div id="app-content" class="app-content app-content--hidden">
+
+        <!-- Navigation -->
+        <nav class="nav" id="nav">
+            <div class="nav-container">
+                <a href="#hero" class="nav-logo" id="nav-logo"></a>
+                <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#locations" class="nav-link" data-i18n="nav.locations">Lokalizacje</a></li>
+                    <li><a href="#schedule" class="nav-link" data-i18n="nav.schedule">Harmonogram</a></li>
+                    <li><a href="#accommodation" class="nav-link" data-i18n="nav.accommodation">Noclegi</a></li>
+                    <li><a href="#album" class="nav-link" data-i18n="nav.album">Album</a></li>
+                    <li class="nav-lang-item">
+                        <div class="lang-switcher lang-switcher--nav" id="lang-switcher-nav">
+                            <button class="lang-btn active" data-lang="pl">PL</button>
+                            <button class="lang-btn" data-lang="ua">UA</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <p class="hero-subtitle" data-i18n="hero.subtitle">Zapraszamy na ślub</p>
+                <h1 class="hero-title" id="hero-title"></h1>
+                <div class="hero-date">
+                    <span class="hero-date-text" id="hero-date"></span>
+                </div>
+                <div class="countdown" id="countdown">
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="days">000</span>
+                        <span class="countdown-label" data-i18n="countdown.days">dni</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="hours">00</span>
+                        <span class="countdown-label" data-i18n="countdown.hours">godzin</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="minutes">00</span>
+                        <span class="countdown-label" data-i18n="countdown.minutes">minut</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="seconds">00</span>
+                        <span class="countdown-label" data-i18n="countdown.seconds">sekund</span>
+                    </div>
+                </div>
+                <a href="#locations" class="hero-scroll">
+                    <span data-i18n="hero.scroll">Szczegóły</span>
+                    <img src="images/icons/arrow-down.svg" alt="Arrow down" class="icon-img" width="24" height="24">
+                </a>
+            </div>
+        </section>
+
+        <!-- Locations Section -->
+        <section class="section locations" id="locations">
+            <div class="container">
+                <h2 class="section-title" data-i18n="locations.title">Ceremonia i Wesele</h2>
+                <p class="section-subtitle" data-i18n="locations.subtitle">Gdzie i kiedy się spotkamy</p>
+                
+                <div class="locations-grid card-grid">
+                    <!-- Church Card -->
+                    <div class="location-card card animate-on-scroll">
+                        <div class="location-icon icon-circle">
+                            <img src="images/icons/church.svg" alt="Church" class="icon-img" width="48" height="48">
+                        </div>
+                        <h3 class="location-title" data-i18n="locations.ceremony">Ceremonia</h3>
+                        <p class="location-name" id="ceremony-name"></p>
+                        <p class="location-address" id="ceremony-address"></p>
+                        <p class="location-time">
+                            <img src="images/icons/clock-3.svg" alt="Time" class="icon-img" width="16" height="16">
+                            <span id="ceremony-time"></span>
+                        </p>
+                        <div class="location-map" id="ceremony-map-container"></div>
+                        <a id="ceremony-nav" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                            <img src="images/icons/map-pin.svg" alt="Map" class="icon-img" width="16" height="16">
+                            <span data-i18n="locations.navigate">Nawiguj</span>
+                        </a>
+                    </div>
+
+                    <!-- Venue Card -->
+                    <div class="location-card card animate-on-scroll">
+                        <div class="location-icon icon-circle">
+                            <img src="images/icons/building-2.svg" alt="Venue" class="icon-img" width="48" height="48">
+                        </div>
+                        <h3 class="location-title" data-i18n="locations.reception">Wesele</h3>
+                        <p class="location-name" id="venue-name"></p>
+                        <p class="location-address" id="venue-address"></p>
+                        <p class="location-time">
+                            <img src="images/icons/clock-3.svg" alt="Time" class="icon-img" width="16" height="16">
+                            <span id="venue-time"></span>
+                        </p>
+                        <div class="location-map" id="venue-map-container"></div>
+                        <a id="venue-nav" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                            <img src="images/icons/map-pin.svg" alt="Map" class="icon-img" width="16" height="16">
+                            <span data-i18n="locations.navigate">Nawiguj</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule Section -->
+        <section class="section section-alt schedule" id="schedule">
+            <div class="container">
+                <h2 class="section-title" data-i18n="schedule.title">Harmonogram dnia</h2>
+                <p class="section-subtitle" data-i18n="schedule.subtitle">Jak będzie przebiegał nasz wielki dzień</p>
+                
+                <div class="timeline" id="timeline-container">
+                    <!-- Generated by JS from encrypted data -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Accommodation Section -->
+        <section class="section accommodation" id="accommodation">
+            <div class="container">
+                <h2 class="section-title" data-i18n="accommodation.title">Noclegi i Transport</h2>
+                <p class="section-subtitle" data-i18n="accommodation.subtitle">Wszystko czego potrzebujesz na nasz dzień</p>
+                
+                <div class="accommodation-grid card-grid">
+                    <!-- Hotel Card -->
+                    <div class="info-card card animate-on-scroll">
+                        <div class="info-card-icon icon-circle">
+                            <img src="images/icons/hotel.svg" alt="Hotel" class="icon-img" width="40" height="40">
+                        </div>
+                        <h3 class="info-card-title" id="hotel-title">Nocleg</h3>
+                        <p class="info-card-subtitle" id="hotel-reservation-note"></p>
+                        <div class="info-card-content">
+                            <p class="info-card-detail">
+                                <img src="images/icons/map-pin.svg" alt="Address" class="icon-img" width="16" height="16">
+                                <a id="hotel-map-link" href="#" target="_blank" rel="noopener noreferrer"><span id="hotel-address"></span></a>
+                            </p>
+                            <p class="info-card-detail">
+                                <img src="images/icons/clock-3.svg" alt="Check-in" class="icon-img" width="16" height="16">
+                                <span id="hotel-checkin"></span>
+                            </p>
+                            <p class="info-card-detail">
+                                <img src="images/icons/utensils-crossed.svg" alt="Breakfast" class="icon-img" width="16" height="16">
+                                <span id="hotel-breakfast"></span>
+                            </p>
+                        </div>
+                        <div class="info-card-buttons">
+                            <a id="hotel-website-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-i18n="accommodation.hotelButton">
+                                Zobacz hotel
+                            </a>
+                            <a id="hotel-nav-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+                                <img src="images/icons/map-pin.svg" alt="Map" class="icon-img" width="16" height="16">
+                                <span data-i18n="locations.navigate">Nawiguj</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Transport Card -->
+                    <div class="info-card card animate-on-scroll">
+                        <div class="info-card-icon icon-circle">
+                            <img src="images/icons/bus.svg" alt="Bus" class="icon-img" width="40" height="40">
+                        </div>
+                        <h3 class="info-card-title" data-i18n="accommodation.transportTitle">Transport dla gości</h3>
+                        <div class="info-card-content">
+                            <p class="info-card-subtitle" data-i18n="accommodation.transportSubtitle">Zapewniamy bezpłatny transport busem:</p>
+                            <ul class="transport-list" id="transport-list">
+                                <!-- Generated by JS from encrypted data -->
+                            </ul>
+                            <p class="info-card-note">
+                                <img src="images/icons/info.svg" alt="Info" class="icon-img" width="16" height="16">
+                                <span data-i18n="accommodation.transportNote">Prosimy o punktualność - bus nie czeka!</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Album Section -->
+        <section class="section section-alt album" id="album">
+            <div class="container">
+                <h2 class="section-title" data-i18n="album.title">Wspólny Album</h2>
+                <p class="section-subtitle" data-i18n="album.subtitle">Podziel się swoimi zdjęciami z naszego wesela!</p>
+                
+                <div class="album-content animate-on-scroll">
+                    <div class="album-platform-grid">
+                        <div class="album-platform-card card">
+                            <div class="album-platform-icon" aria-label="Android" role="img">
+                                <span class="platform-glyph platform-glyph--android"></span>
+                            </div>
+                            <div class="qr-placeholder" id="qr-code-google"></div>
+                            <a id="album-link-google" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-large">
+                                <span data-i18n="album.buttonOpen">Otwórz album</span>
+                            </a>
+                        </div>
+
+                        <div class="album-platform-card card">
+                            <div class="album-platform-icon" aria-label="Apple" role="img">
+                                <span class="platform-glyph platform-glyph--apple"></span>
+                            </div>
+                            <div class="qr-placeholder" id="qr-code-icloud"></div>
+                            <p class="album-note" data-i18n="album.appleNote">Dodamy Cię do albumu iCloud. Jeśli nie masz dostępu — wyślij SMS, a dodamy Cię ręcznie.</p>
+                            <a id="album-link-icloud-sms" href="#" class="btn btn-primary btn-large">
+                                <span data-i18n="album.buttonSms">Wyślij SMS</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p class="footer-names" id="footer-names"></p>
+                <p class="footer-date" id="footer-date"></p>
+                <p class="footer-made" data-i18n="footer.madeWith">Stworzone z ❤️</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/encrypted-data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+data/wedding-data.json
+node_modules/
+.playwright-mcp/
+.DS_Store
