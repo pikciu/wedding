@@ -686,6 +686,92 @@ img {
 }
 
 /* ===================================
+   FAQ Section
+   =================================== */
+.faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.faq-item {
+    background: var(--bg-primary);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast);
+}
+
+.faq-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 28px;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.faq-question::after {
+    content: '';
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--accent-green);
+    border-bottom: 2px solid var(--accent-green);
+    transform: rotate(-45deg);
+    transition: transform var(--transition-medium);
+}
+
+.faq-item.open .faq-question::after {
+    transform: rotate(45deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-medium);
+}
+
+.faq-answer-inner {
+    padding: 0 28px 24px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.faq-answer-inner ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+}
+
+.faq-answer-inner ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+
+.faq-answer-inner ul li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+/* ===================================
    Album Section
    =================================== */
 .album-content {
@@ -949,6 +1035,16 @@ img {
     .album-platform-grid {
         grid-template-columns: 1fr;
         gap: var(--card-gap-mobile);
+    }
+
+    /* FAQ Mobile */
+    .faq-question {
+        padding: 20px 20px;
+        font-size: 0.95rem;
+    }
+
+    .faq-answer-inner {
+        padding: 0 20px 20px;
     }
 }
 
