@@ -524,6 +524,10 @@ async function initApp() {
     var hash = window.location.hash;
     if (hash && hash.length > 1) {
         password = decodeURIComponent(hash.substring(1));
+        // Some services insert a slash before the hash value (e.g. /#haslo)
+        if (password.charAt(0) === '/') {
+            password = password.substring(1) || null;
+        }
     }
 
     if (!password) {
