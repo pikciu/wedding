@@ -1,6 +1,6 @@
 /**
  * Wedding Website JavaScript
- * Handles: Page Population, Countdown, Navigation, Scroll Animations
+ * Handles: Page Population, Navigation, Scroll Animations
  * Crypto logic lives in crypto.js (shared with invitation.js)
  */
 
@@ -8,7 +8,6 @@
 // Configuration (populated after decryption)
 // ===================================
 const CONFIG = {
-    weddingDate: null,
     animationThreshold: 0.2,
     scrollOffset: 100
 };
@@ -270,8 +269,6 @@ function populatePage(data) {
     document.getElementById('footer-names').textContent = data.bride + ' & ' + data.groom;
     document.getElementById('footer-date').textContent = t(data.weddingDateDisplay);
 
-    // Update config
-    CONFIG.weddingDate = new Date(data.weddingDate);
 }
 
 // ===================================
@@ -342,52 +339,6 @@ function showError(message) {
     var errorEl = document.getElementById('lock-screen-error');
     errorEl.textContent = message;
     errorEl.style.display = 'block';
-}
-
-// ===================================
-// DOM Elements (resolved after decryption)
-// ===================================
-var countdownElements = null;
-
-function getCountdownElements() {
-    if (!countdownElements) {
-        countdownElements = {
-            days: document.getElementById('days'),
-            hours: document.getElementById('hours'),
-            minutes: document.getElementById('minutes'),
-            seconds: document.getElementById('seconds')
-        };
-    }
-    return countdownElements;
-}
-
-// ===================================
-// Countdown Timer
-// ===================================
-function updateCountdown() {
-    if (!CONFIG.weddingDate) return;
-
-    var els = getCountdownElements();
-    var now = new Date();
-    var diff = CONFIG.weddingDate - now;
-
-    if (diff <= 0) {
-        els.days.textContent = '0';
-        els.hours.textContent = '00';
-        els.minutes.textContent = '00';
-        els.seconds.textContent = '00';
-        return;
-    }
-
-    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    els.days.textContent = days;
-    els.hours.textContent = hours.toString().padStart(2, '0');
-    els.minutes.textContent = minutes.toString().padStart(2, '0');
-    els.seconds.textContent = seconds.toString().padStart(2, '0');
 }
 
 // ===================================
@@ -527,8 +478,6 @@ function onDecryptSuccess(data, password) {
     }
 
     // Start features
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
     initNavigation();
     initScrollAnimations();
     initActiveNavigation();
