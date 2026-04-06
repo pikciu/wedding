@@ -1,17 +1,8 @@
 /**
  * Wedding Website JavaScript
- * Handles: Decryption, Page Population, Countdown, Navigation, Scroll Animations
+ * Handles: Page Population, Countdown, Navigation, Scroll Animations
+ * Crypto logic lives in crypto.js (shared with invitation.js)
  */
-
-// ===================================
-// Crypto Constants
-// ===================================
-const CRYPTO = {
-    iterations: 100000,
-    hash: 'SHA-256',
-    algorithm: 'AES-GCM',
-    keyLength: 256
-};
 
 // ===================================
 // Configuration (populated after decryption)
@@ -172,65 +163,14 @@ function initFaqAccordion() {
 }
 
 // ===================================
-// Utility Functions
+// Utility shorthand (delegates to CryptoUtils)
 // ===================================
 function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return CryptoUtils.escapeHtml(str);
 }
 
-function base64ToBytes(base64) {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-}
-
-// ===================================
-// Crypto Functions
-// ===================================
-async function deriveKey(password, salt) {
-    const encoder = new TextEncoder();
-    const keyMaterial = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(password),
-        'PBKDF2',
-        false,
-        ['deriveKey']
-    );
-
-    return crypto.subtle.deriveKey(
-        {
-            name: 'PBKDF2',
-            salt: salt,
-            iterations: CRYPTO.iterations,
-            hash: CRYPTO.hash
-        },
-        keyMaterial,
-        { name: CRYPTO.algorithm, length: CRYPTO.keyLength },
-        false,
-        ['decrypt']
-    );
-}
-
-async function decryptData(password) {
-    const salt = base64ToBytes(ENCRYPTED_DATA.salt);
-    const iv = base64ToBytes(ENCRYPTED_DATA.iv);
-    const data = base64ToBytes(ENCRYPTED_DATA.data);
-
-    const key = await deriveKey(password, salt);
-
-    const decrypted = await crypto.subtle.decrypt(
-        { name: CRYPTO.algorithm, iv: iv },
-        key,
-        data
-    );
-
-    const decoder = new TextDecoder();
-    return JSON.parse(decoder.decode(decrypted));
+function decryptData(password) {
+    return CryptoUtils.decryptData(password, ENCRYPTED_DATA);
 }
 
 // ===================================

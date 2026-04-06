@@ -252,22 +252,18 @@ img {
     justify-content: center;
     text-align: center;
     color: var(--text-light);
-    background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-warm) 100%);
+    background-image: url('../images/hero.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
 }
 
-/* If you add a background image, uncomment this:
-.hero {
-    background-image: url('../images/hero-bg.jpg');
-}
-*/
-
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background:
+        linear-gradient(135deg, rgba(156, 175, 136, 0.22) 0%, rgba(212, 163, 115, 0.22) 100%),
+        rgba(0, 0, 0, 0.4);
 }
 
 .hero-content {
