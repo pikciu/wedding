@@ -18,6 +18,7 @@ const CONFIG = {
 var translations = null;
 var currentLang = localStorage.getItem('weddingLang') || 'pl';
 var currentData = null;
+var currentGuestKey = null;
 
 function t(field) {
     if (field && typeof field === 'object' && field[currentLang] !== undefined) {
@@ -172,6 +173,193 @@ function decryptData(password) {
     return CryptoUtils.decryptData(password, ENCRYPTED_DATA);
 }
 
+function getGuestNames(guest) {
+    if (!guest || !Array.isArray(guest.names)) return [];
+
+    return guest.names.filter(function (item) {
+        return typeof item === 'string' && item.trim();
+    });
+}
+
+function formatGuestNamesHtml(names) {
+    if (!Array.isArray(names) || names.length === 0) return '';
+
+    return names.map(function (name) {
+        return escapeHtml(name);
+    }).join(' <span>&</span> ');
+}
+
+function getPersonName(person) {
+    if (person && typeof person === 'object' && typeof person.name === 'string') {
+        return person.name;
+    }
+    if (typeof person === 'string') return person;
+    return '';
+}
+
+function getCurrentGuest(data) {
+    if (!currentGuestKey || !data || !data.guests || !data.guests[currentGuestKey]) {
+        return null;
+    }
+    return data.guests[currentGuestKey];
+}
+
+function formatRsvpDeadline(deadlineIso) {
+    var date = new Date(deadlineIso);
+    if (Number.isNaN(date.getTime())) return '';
+    var locale = currentLang === 'ua' ? 'uk-UA' : 'pl-PL';
+    return new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }).format(date);
+}
+
+function getRsvpStorageKey() {
+    return currentGuestKey ? 'rsvpSubmitted:' + currentGuestKey : 'rsvpSubmitted:anonymous';
+}
+
+function setRsvpStatus(key, tone) {
+    var statusEl = document.getElementById('rsvp-status');
+    if (!statusEl || !translations || !translations[currentLang]) return;
+    statusEl.textContent = translations[currentLang][key] || '';
+    statusEl.className = 'rsvp-status';
+    if (tone) statusEl.classList.add('rsvp-status--' + tone);
+}
+
+function showRsvpConfirmed(data) {
+    var confirmed = document.getElementById('rsvp-confirmed');
+    var form = document.getElementById('rsvp-form');
+    var strings = translations ? translations[currentLang] : {};
+    if (!confirmed) return;
+
+    if (form) form.style.display = 'none';
+
+    var titleEl = document.getElementById('rsvp-confirmed-title');
+    var msgEl = document.getElementById('rsvp-confirmed-message');
+    var contactsEl = document.getElementById('rsvp-confirmed-contacts');
+
+    if (titleEl) titleEl.textContent = strings['rsvp.confirmedTitle'] || '';
+    if (msgEl) msgEl.textContent = strings['rsvp.confirmedMessage'] || '';
+
+    if (contactsEl && data) {
+        contactsEl.innerHTML = '';
+        var people = [
+            { name: getPersonName(data.bride), phone: data.bride && data.bride.phone },
+            { name: getPersonName(data.groom), phone: data.groom && data.groom.phone }
+        ];
+        people.forEach(function (p) {
+            if (!p.phone) return;
+            var link = document.createElement('a');
+            link.href = 'tel:' + p.phone.replace(/\s/g, '');
+            link.className = 'rsvp-confirmed__contact';
+            var nameSpan = document.createElement('span');
+            nameSpan.className = 'rsvp-confirmed__contact-name';
+            nameSpan.textContent = p.name;
+            var phoneSpan = document.createElement('span');
+            phoneSpan.className = 'rsvp-confirmed__contact-phone';
+            phoneSpan.textContent = p.phone;
+            link.appendChild(nameSpan);
+            link.appendChild(phoneSpan);
+            contactsEl.appendChild(link);
+        });
+    }
+
+    confirmed.style.display = '';
+}
+
+function renderRsvp(data) {
+    var section = document.getElementById('rsvp');
+    var navRsvp = document.querySelector('a[href="#rsvp"]');
+    var guest = getCurrentGuest(data);
+
+    if (!guest) {
+        if (section) section.style.display = 'none';
+        if (navRsvp) navRsvp.closest('li').style.display = 'none';
+        var heroScroll = document.querySelector('.hero-scroll');
+        if (heroScroll) heroScroll.href = '#locations';
+        return;
+    }
+
+    var subtitleEl = document.getElementById('rsvp-subtitle');
+    var strings = translations ? translations[currentLang] : {};
+    var form = document.getElementById('rsvp-form');
+
+    if (subtitleEl && data.rsvpDeadline) {
+        var deadlineDate = formatRsvpDeadline(data.rsvpDeadline);
+        var subtitleTemplate = strings['rsvp.subtitleWithDate'] || strings['rsvp.subtitle'] || '';
+        subtitleEl.textContent = subtitleTemplate.replace('{date}', deadlineDate);
+    }
+
+    if (localStorage.getItem(getRsvpStorageKey()) === '1') {
+        if (form) form.style.display = 'none';
+        showRsvpConfirmed(data);
+    }
+}
+
+async function submitRsvp(url, payload) {
+    var body = new URLSearchParams();
+    Object.keys(payload).forEach(function (key) {
+        body.append(key, payload[key]);
+    });
+    await fetch(url, { method: 'POST', mode: 'no-cors', body: body });
+}
+
+function initRsvpForm() {
+    var form = document.getElementById('rsvp-form');
+    if (!form || form.dataset.ready === '1') return;
+
+    var options = form.querySelectorAll('.rsvp-option');
+    var hiddenInput = document.getElementById('rsvp-attendance');
+
+    options.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            options.forEach(function (b) { b.classList.remove('rsvp-option--active'); });
+            btn.classList.add('rsvp-option--active');
+            if (hiddenInput) hiddenInput.value = btn.dataset.value;
+        });
+    });
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!currentData || !currentGuestKey) {
+            setRsvpStatus('rsvp.missingGuestCode', 'error');
+            return;
+        }
+
+        var attendance = hiddenInput ? hiddenInput.value : '';
+        if (!attendance) {
+            setRsvpStatus('rsvp.selectOption', 'error');
+            return;
+        }
+
+        var guest = getCurrentGuest(currentData);
+        var names = getGuestNames(guest);
+        var honeypot = form.elements.website ? form.elements.website.value : '';
+        var submitBtn = document.getElementById('rsvp-submit');
+
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+            await submitRsvp(currentData.rsvpUrl, {
+                guestCode: currentGuestKey,
+                names: names.join(', '),
+                attendance: attendance,
+                lang: currentLang,
+                website: honeypot
+            });
+
+            localStorage.setItem(getRsvpStorageKey(), '1');
+            showRsvpConfirmed(currentData);
+        } catch (err) {
+            if (submitBtn) submitBtn.disabled = false;
+            setRsvpStatus('rsvp.submitError', 'error');
+        }
+    });
+
+    form.dataset.ready = '1';
+}
+
 // ===================================
 // Map Iframe Builder
 // ===================================
@@ -185,6 +373,49 @@ function createMapIframe(src) {
     iframe.loading = 'lazy';
     iframe.referrerPolicy = 'no-referrer-when-downgrade';
     return iframe;
+}
+
+// ===================================
+// Hero Invitation Rendering
+// ===================================
+function renderHeroInvitation(data) {
+    var guest = getCurrentGuest(data);
+
+    var inviteTextEl = document.getElementById('hero-invite-text');
+    var guestNameEl = document.getElementById('hero-guest-name');
+    var partnerTextEl = document.getElementById('hero-partner-text');
+    var dateEl = document.getElementById('hero-date');
+    var strings = translations ? translations[currentLang] : {};
+    var guestNames = getGuestNames(guest);
+    var partnerText = null;
+
+    if (guest && typeof guest.partner === 'string') {
+        partnerText = guest.partner.trim() || null;
+    }
+
+    if (guest && guestNames.length > 0) {
+        inviteTextEl.textContent = strings['hero.joyfullyInvite'] || 'z radością zapraszają';
+        inviteTextEl.style.display = '';
+        guestNameEl.innerHTML = formatGuestNamesHtml(guestNames);
+        guestNameEl.style.display = '';
+        if (partnerText) {
+            partnerTextEl.textContent = partnerText;
+            partnerTextEl.style.display = '';
+        } else {
+            partnerTextEl.textContent = '';
+            partnerTextEl.style.display = 'none';
+        }
+        dateEl.textContent = (strings['hero.toTheCeremony'] || 'na uroczystość zawarcia związku małżeńskiego') +
+            '\n' + t(data.weddingDateDisplay);
+    } else {
+        inviteTextEl.textContent = '';
+        inviteTextEl.style.display = 'none';
+        guestNameEl.textContent = '';
+        guestNameEl.style.display = 'none';
+        partnerTextEl.textContent = '';
+        partnerTextEl.style.display = 'none';
+        dateEl.textContent = t(data.weddingDateDisplay);
+    }
 }
 
 // ===================================
@@ -202,9 +433,12 @@ function populatePage(data) {
     document.getElementById('nav-logo').textContent = data.navLogo;
 
     // Hero
+    var brideName = getPersonName(data.bride);
+    var groomName = getPersonName(data.groom);
     document.getElementById('hero-title').innerHTML =
-        escapeHtml(data.bride) + ' <span>&</span> ' + escapeHtml(data.groom);
-    document.getElementById('hero-date').textContent = t(data.weddingDateDisplay);
+        escapeHtml(brideName) + ' <span>&</span> ' + escapeHtml(groomName);
+    renderHeroInvitation(data);
+    renderRsvp(data);
 
     // Ceremony
     document.getElementById('ceremony-name').textContent = data.ceremony.name;
@@ -266,7 +500,7 @@ function populatePage(data) {
     renderFaq(data);
 
     // Footer
-    document.getElementById('footer-names').textContent = data.bride + ' & ' + data.groom;
+    document.getElementById('footer-names').textContent = brideName + ' & ' + groomName;
     document.getElementById('footer-date').textContent = t(data.weddingDateDisplay);
 
 }
@@ -281,7 +515,7 @@ function repopulatePage(data) {
     if (metaDesc) metaDesc.content = t(data.pageDescription);
 
     // Hero date
-    document.getElementById('hero-date').textContent = t(data.weddingDateDisplay);
+    renderHeroInvitation(data);
 
     // Ceremony & Venue times
     document.getElementById('ceremony-time').textContent = t(data.ceremony.timeDisplay);
@@ -317,6 +551,8 @@ function repopulatePage(data) {
 
     // Footer date
     document.getElementById('footer-date').textContent = t(data.weddingDateDisplay);
+
+    renderRsvp(data);
 
     // FAQ
     renderFaq(data);
@@ -464,15 +700,23 @@ function initActiveNavigation() {
 // ===================================
 // App Initialization
 // ===================================
-function onDecryptSuccess(data, password) {
+function onDecryptSuccess(data, password, guestKey) {
+    var normalizedGuestKey = typeof guestKey === 'string' ? guestKey.trim() : '';
+    currentGuestKey = normalizedGuestKey || null;
     populatePage(data);
     applyTranslations();
     hideLockScreen();
 
-    // Cache password for future visits
+    // Cache password and guest key for future visits
     localStorage.setItem('weddingPassword', password);
+    if (currentGuestKey) {
+        localStorage.setItem('weddingGuestKey', currentGuestKey);
+    } else {
+        localStorage.removeItem('weddingGuestKey');
+    }
 
-    // Remove hash from URL (prevent password leaking in screenshots)
+    // Remove only hash from URL (prevent password leaking in screenshots)
+    // Keep query params so switching guest links is easier.
     if (window.location.hash) {
         history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -483,6 +727,7 @@ function onDecryptSuccess(data, password) {
     initActiveNavigation();
     generateQRCode();
     initFaqAccordion();
+    initRsvpForm();
 }
 
 function setupPasswordForm() {
@@ -490,13 +735,15 @@ function setupPasswordForm() {
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
         var input = document.getElementById('password-input');
+        var guestInput = document.getElementById('guest-code-input');
         var password = input.value;
+        var guestKey = guestInput.value.trim() || null;
 
         if (!password) return;
 
         try {
             var data = await decryptData(password);
-            onDecryptSuccess(data, password);
+            onDecryptSuccess(data, password, guestKey);
         } catch (err) {
             showError(translations ? translations[currentLang]['lockScreen.error'] : 'Nieprawid\u0142owe has\u0142o. Spr\u00f3buj ponownie.');
             input.value = '';
@@ -518,6 +765,17 @@ async function initApp() {
         return;
     }
 
+    // Try guest key from: 1) URL query param ?g= (strict priority), 2) localStorage fallback
+    var guestKey = null;
+    var urlParams = new URLSearchParams(window.location.search);
+    var hasGuestKeyInUrl = urlParams.has('g');
+    if (hasGuestKeyInUrl) {
+        guestKey = (urlParams.get('g') || '').trim() || null;
+    } else {
+        var cachedGuestKey = localStorage.getItem('weddingGuestKey');
+        guestKey = cachedGuestKey ? cachedGuestKey.trim() || null : null;
+    }
+
     // Try password from: 1) URL hash, 2) localStorage
     var password = null;
 
@@ -537,7 +795,7 @@ async function initApp() {
     if (password) {
         try {
             var data = await decryptData(password);
-            onDecryptSuccess(data, password);
+            onDecryptSuccess(data, password, guestKey);
             return;
         } catch (err) {
             // Invalid cached/URL password — clear and show form
@@ -547,6 +805,10 @@ async function initApp() {
 
     // No valid password found — show lock screen
     showLockScreen();
+    var guestInput = document.getElementById('guest-code-input');
+    if (guestInput && guestKey) {
+        guestInput.value = guestKey;
+    }
     setupPasswordForm();
 }
 

@@ -13,6 +13,7 @@
     --text-primary: #3D3D3D;
     --text-secondary: #6B6B6B;
     --text-light: #FDFBF7;
+    --text-light-muted: #E9E3D9;
     
     --accent-green: #9CAF88;
     --accent-green-dark: #7A9166;
@@ -295,20 +296,72 @@ img {
     margin-bottom: 24px;
 }
 
-.hero-title span {
+.hero-title span,
+.hero-guest-name span {
     font-style: italic;
     color: var(--accent-warm);
 }
 
-.hero-date {
-    margin-bottom: 0;
-}
-
-.hero-date-text {
+.hero-invite-text,
+.hero-date-text,
+.hero-partner-text {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 400;
+    line-height: 1.45;
     letter-spacing: 2px;
+    opacity: 0.95;
+}
+
+.hero-date-text {
+    color: var(--text-light-muted);
+    white-space: pre-line;
+}
+
+.hero-invite-text {
+    color: var(--text-light-muted);
+}
+
+.hero-guest-name {
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 400;
+    white-space: pre-line;
+    margin-bottom: 10px;
+}
+
+.hero-date {
+    position: relative;
+    margin-bottom: 0;
+    margin-top: 22px;
+    padding-top: 28px;
+}
+
+.hero-date::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(58vw, 260px);
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        rgba(253, 251, 247, 0) 0%,
+        rgba(233, 227, 217, 0.7) 20%,
+        rgba(233, 227, 217, 0.9) 50%,
+        rgba(233, 227, 217, 0.7) 80%,
+        rgba(253, 251, 247, 0) 100%
+    );
+}
+
+.hero-invite-text,
+.hero-partner-text {
+    margin-bottom: 8px;
+}
+
+.hero-partner-text {
+    margin-bottom: 16px;
 }
 
 /* Hero Scroll Button */
@@ -366,6 +419,151 @@ img {
     color: var(--text-secondary);
     font-size: 1.1rem;
     margin-bottom: 60px;
+}
+
+/* ===================================
+   RSVP Section
+   =================================== */
+.rsvp-form {
+    max-width: 640px;
+    margin: 0 auto;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+}
+
+.rsvp-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.rsvp-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 18px 24px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: white;
+    border: 2px solid var(--bg-secondary);
+    border-radius: var(--card-radius);
+    cursor: pointer;
+    transition: all var(--transition-medium);
+}
+
+.rsvp-option:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.rsvp-option--active {
+    border-color: var(--accent-green);
+    background: rgba(156, 175, 136, 0.1);
+    color: var(--accent-green-dark);
+}
+
+.rsvp-option--active:hover {
+    transform: none;
+}
+
+.rsvp-honeypot {
+    position: absolute;
+    left: -99999px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rsvp-status {
+    min-height: 24px;
+    margin: -20px auto 0;
+    max-width: 640px;
+    text-align: center;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.rsvp-status--success {
+    color: var(--accent-green-dark);
+}
+
+.rsvp-status--error {
+    color: #b73f34;
+}
+
+.rsvp-status--muted {
+    color: var(--text-secondary);
+}
+
+/* RSVP Confirmed Card */
+.rsvp-confirmed {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 40px 32px;
+}
+
+.rsvp-confirmed__icon {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 20px;
+}
+
+.rsvp-confirmed__title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.rsvp-confirmed__message {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+.rsvp-confirmed__contacts {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.rsvp-confirmed__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 28px;
+    border: 2px solid var(--bg-secondary);
+    border-radius: var(--card-radius);
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-medium);
+}
+
+.rsvp-confirmed__contact:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.rsvp-confirmed__contact-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.rsvp-confirmed__contact-phone {
+    color: var(--accent-green-dark);
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* ===================================
@@ -431,6 +629,11 @@ img {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    text-decoration: none;
+    line-height: 1;
+    white-space: nowrap;
     padding: 14px 28px;
     font-family: var(--font-body);
     font-size: 0.95rem;
@@ -466,6 +669,16 @@ img {
 .btn-large {
     padding: 18px 36px;
     font-size: 1.05rem;
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#rsvp-submit {
+    align-self: center;
+    width: auto;
 }
 
 .icon-img {
@@ -943,6 +1156,10 @@ img {
     .hero-title {
         font-size: 2.5rem;
     }
+
+    .hero-guest-name {
+        font-size: 2.5rem;
+    }
     
     /* Sections */
     .section-title {
@@ -1008,9 +1225,16 @@ img {
     .hero-title {
         font-size: 2rem;
     }
+
+    .hero-guest-name {
+        font-size: 2rem;
+    }
     
-    .hero-date-text {
+    .hero-invite-text,
+    .hero-date-text,
+    .hero-partner-text {
         font-size: 1.2rem;
+        line-height: 1.4;
     }
     
     .btn {
@@ -1099,21 +1323,7 @@ img {
 }
 
 .lock-screen-button {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 0.85rem;
-    background: var(--accent-warm);
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: background var(--transition-medium), transform var(--transition-fast);
-}
-
-.lock-screen-button:hover {
-    background: var(--accent-warm-dark);
-    transform: translateY(-1px);
+    width: 100%;
 }
 
 .lock-screen-error {

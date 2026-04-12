@@ -26,10 +26,11 @@
                 <button class="lang-btn" data-lang="ua">UA</button>
             </div>
             <h1 class="lock-screen-title" data-i18n="lockScreen.title">Strona ślubna</h1>
-            <p class="lock-screen-subtitle" data-i18n="lockScreen.subtitle">Podaj hasło, aby zobaczyć szczegóły</p>
+            <p class="lock-screen-subtitle" data-i18n="lockScreen.subtitle">Podaj kod zaproszenia i hasło</p>
             <form id="password-form" class="lock-screen-form">
-                <input type="password" id="password-input" class="lock-screen-input" data-i18n-placeholder="lockScreen.placeholder" placeholder="Hasło" autocomplete="off" autofocus>
-                <button type="submit" class="lock-screen-button" data-i18n="lockScreen.button">Wejdź</button>
+                <input type="text" id="guest-code-input" class="lock-screen-input" data-i18n-placeholder="lockScreen.guestCodePlaceholder" placeholder="Kod zaproszenia" autocomplete="off" autofocus>
+                <input type="password" id="password-input" class="lock-screen-input" data-i18n-placeholder="lockScreen.placeholder" placeholder="Hasło" autocomplete="off">
+                <button type="submit" class="btn btn-primary lock-screen-button" data-i18n="lockScreen.button">Wejdź</button>
             </form>
             <p id="lock-screen-error" class="lock-screen-error"></p>
         </div>
@@ -48,6 +49,7 @@
                     <span></span>
                 </button>
                 <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#rsvp" class="nav-link" data-i18n="nav.rsvp">RSVP</a></li>
                     <li><a href="#locations" class="nav-link" data-i18n="nav.locations">Lokalizacje</a></li>
                     <li><a href="#schedule" class="nav-link" data-i18n="nav.schedule">Harmonogram</a></li>
                     <li><a href="#accommodation" class="nav-link" data-i18n="nav.accommodation">Noclegi</a></li>
@@ -68,13 +70,49 @@
             <div class="hero-overlay"></div>
             <div class="hero-content">
                 <h1 class="hero-title" id="hero-title"></h1>
+                <p class="hero-invite-text" id="hero-invite-text"></p>
+                <p class="hero-guest-name" id="hero-guest-name"></p>
+                <p class="hero-partner-text" id="hero-partner-text"></p>
                 <div class="hero-date">
                     <span class="hero-date-text" id="hero-date"></span>
                 </div>
-                <a href="#locations" class="hero-scroll">
+                <a href="#rsvp" class="hero-scroll">
                     <span data-i18n="hero.scroll">Szczegóły</span>
                     <img src="images/icons/arrow-down.svg" alt="Arrow down" class="icon-img" width="24" height="24">
                 </a>
+            </div>
+        </section>
+
+        <!-- RSVP Section -->
+        <section class="section section-alt rsvp" id="rsvp">
+            <div class="container">
+                <h2 class="section-title" data-i18n="rsvp.title">Potwierdź obecność</h2>
+                <p class="section-subtitle" id="rsvp-subtitle">Daj znać, czy będziesz z nami do {date}</p>
+
+                <div class="rsvp-confirmed card animate-on-scroll" id="rsvp-confirmed" style="display:none">
+                    <div class="rsvp-confirmed__icon icon-circle">
+                        <img src="images/icons/heart-handshake.svg" alt="" class="icon-img" width="48" height="48">
+                    </div>
+                    <p class="rsvp-confirmed__title" id="rsvp-confirmed-title"></p>
+                    <p class="rsvp-confirmed__message" id="rsvp-confirmed-message"></p>
+                    <div class="rsvp-confirmed__contacts" id="rsvp-confirmed-contacts"></div>
+                </div>
+
+                <div class="rsvp-status" id="rsvp-status"></div>
+
+                <form id="rsvp-form" class="rsvp-form card animate-on-scroll" novalidate>
+
+                    <div class="rsvp-options" id="rsvp-options">
+                        <button type="button" class="rsvp-option" data-value="yes" data-i18n="rsvp.optionYes">Tak, będziemy w komplecie</button>
+                        <button type="button" class="rsvp-option" data-value="partial" data-i18n="rsvp.optionPartial">Będę bez osoby towarzyszącej</button>
+                        <button type="button" class="rsvp-option" data-value="no" data-i18n="rsvp.optionNo">Nie dam rady</button>
+                    </div>
+                    <input type="hidden" name="attendance" id="rsvp-attendance">
+
+                    <input type="text" name="website" class="rsvp-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+                    <button type="submit" class="btn btn-primary" id="rsvp-submit" data-i18n="rsvp.submit">Wyślij RSVP</button>
+                </form>
             </div>
         </section>
 
