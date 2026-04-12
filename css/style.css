@@ -1101,22 +1101,6 @@ img {
     :root {
         --section-padding: 80px;
     }
-    
-    .timeline::before {
-        left: 30px;
-    }
-    
-    .timeline-item {
-        grid-template-columns: 60px 1fr;
-        gap: 30px;
-    }
-    
-    .timeline-time {
-        font-size: 1.2rem;
-        text-align: left;
-    }
-    
-
 }
 
 /* Mobile */
@@ -1197,7 +1181,8 @@ img {
     }
     
     .timeline-time {
-        font-size: 1rem;
+        font-size: 1.4rem;
+        text-align: left;
         margin-bottom: 12px;
     }
     
