@@ -90,7 +90,7 @@ export function renderRsvp(data) {
 
     if (subtitleEl && data.rsvpDeadline) {
         var deadlineDate = formatRsvpDeadline(data.rsvpDeadline);
-        var subtitleTemplate = strings['rsvp.subtitleWithDate'] || strings['rsvp.subtitle'] || '';
+        var subtitleTemplate = strings['rsvp.subtitle'] || '';
         subtitleEl.textContent = subtitleTemplate.replace('{date}', deadlineDate);
     }
 
