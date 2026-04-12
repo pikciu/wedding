@@ -18,8 +18,6 @@
     --accent-green: #9CAF88;
     --accent-green-dark: #7A9166;
     --accent-warm: #D4A373;
-    --accent-warm-dark: #B8895A;
-    --accent-gold: #C9A959;
 
     /* Icon filters for external SVG files */
     --icon-filter-light: brightness(0) saturate(100%) invert(100%) sepia(7%) saturate(129%) hue-rotate(290deg) brightness(112%) contrast(98%);
@@ -42,7 +40,6 @@
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
-    --transition-slow: 0.5s ease;
     
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -421,6 +418,10 @@ img {
     margin-bottom: 60px;
 }
 
+.faq .section-title {
+    margin-bottom: 60px;
+}
+
 /* ===================================
    RSVP Section
    =================================== */
@@ -502,6 +503,7 @@ img {
 
 /* RSVP Confirmed Card */
 .rsvp-confirmed {
+    display: none;
     max-width: 640px;
     margin: 0 auto;
     text-align: center;
@@ -688,7 +690,7 @@ img {
 
 .icon-circle .icon-img,
 .info-card-detail .icon-img,
-.album-icon .icon-img {
+.album-platform-icon .icon-img {
     filter: var(--icon-filter-green);
 }
 
@@ -1167,6 +1169,10 @@ img {
     }
     
     .section-subtitle {
+        margin-bottom: 40px;
+    }
+
+    .faq .section-title {
         margin-bottom: 40px;
     }
 
