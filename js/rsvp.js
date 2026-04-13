@@ -3,7 +3,6 @@
  */
 
 import { state } from './state.js';
-import { t } from './i18n.js';
 import { getPersonName, getGuestNames, getCurrentGuest, formatGuestNamesHtml } from './utils.js';
 
 function formatRsvpDeadline(deadlineIso) {

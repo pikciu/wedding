@@ -50,7 +50,7 @@ function generateRows(guests, baseDomain, hashPassword) {
 
     const maxLen = rows.reduce((acc, row) => Math.max(acc, row.displayName.length), 0);
 
-    return rows.map((row) => row.displayName.padEnd(maxLen + 2, ' ') + row.link);
+    return rows.map((row) => row.displayName.padEnd(maxLen + 4, ' ') + row.link);
 }
 
 function main() {
