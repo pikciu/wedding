@@ -288,7 +288,7 @@ img {
 }
 
 .hero-title {
-    font-size: clamp(3rem, 10vw, 6rem);
+    font-size: clamp(2.2rem, 7.5vw, 4.5rem);
     font-weight: 400;
     margin-bottom: 24px;
 }
@@ -321,7 +321,7 @@ img {
 
 .hero-guest-name {
     font-family: var(--font-heading);
-    font-size: clamp(3rem, 10vw, 6rem);
+    font-size: clamp(2.2rem, 7.5vw, 4.5rem);
     font-weight: 400;
     white-space: pre-line;
     margin-bottom: 10px;
